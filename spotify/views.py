@@ -223,12 +223,13 @@ class PlaylistAPI(APIView):
                 playlist.save()
 
     def _update_track_progress(self):
-        playlist = (
-            self.playlist_container
-            if self.playlist_container is not None
-            else Playlist.objects.filter(playlist_id=self.playlist_id)[0]
-        )
-        if playlist is not None or playlist.exists():
+        try:
+            playlist = (
+                self.playlist_container
+                if self.playlist_container is not None
+                else Playlist.objects.filter(playlist_id=self.playlist_id)[0]
+            )
+
             print(playlist.progress)
 
             if playlist.progress < playlist.duration:
@@ -237,8 +238,9 @@ class PlaylistAPI(APIView):
             else:
                 # playlist = Playlist.objects.filter(playlist_id=self.playlist_id)
                 self._save_playlist_track(next_track=True)
-        else:
+        except:
             self._save_playlist_track()
+
 
     def get(self, request, format=None):
         if self.playlist_container is not None:

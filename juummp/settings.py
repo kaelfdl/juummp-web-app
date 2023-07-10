@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 import environ
-
+import boto3
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,16 +25,32 @@ if os.path.isfile(env_file):
     # use local secret file if provided
     env.read_env(env_file)
 else:
-    raise Exception("No local .env detected. No secrets found.")
+    try:
+        client = boto3.client('ssm')
+        response = client.get_parameters(Name=[
+            'SECRET_KEY',
+            'SPOTIFY_CLIENT_ID',
+            'SPOTIFY_CLIENT_SECRET',
+            'SPOTIFY_REDIRECT_URI',
+            'SECRET_ADMIN_URL',
+            'DATABASE_URL',
+            'DEBUG_VALUE',
+            ], WithDecryption=True)
+        instance_id = response['value']
+        store = {}
+        for n in range(len(response['Parameters'])):
+            store[response['Parameters'][n]['Name']] = response['Parameters'][n]['Value']
+    except:
+        raise Exception("No local .env detected. No secrets found.")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else store['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG_VALUE") == "True"
+DEBUG = os.environ.get("DEBUG_VALUE") if os.environ.get("DEBUG_VALUE") else store['DEBUG_VALUE'] == "True"
 
 
 
@@ -86,7 +102,7 @@ WSGI_APPLICATION = "juummp.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 try:
-    DATABASES = {"default": env.db()}
+    DATABASES = {"default": env.db(default=store['DATABASE_URL'])}
 except:
     DATABASES = {
         "default": {

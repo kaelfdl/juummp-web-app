@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from .settings import store
 urlpatterns = [
-    path(os.getenv('SECRET_ADMIN_URL') + '/admin/', admin.site.urls),
+    path(os.getenv('SECRET_ADMIN_URL') if os.getenv('SECRET_ADMIN_URL') else store['SECRET_ADMIN_URL'] + '/admin/', admin.site.urls),
     path('', include('frontend.urls')),
     path('spotify/', include('spotify.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

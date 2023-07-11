@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 import environ
-import boto3
+
+from .util import get_aws_parameters
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,26 +21,32 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = environ.Env(DEBUG=(bool, False))
 env_file = os.path.join(BASE_DIR, ".env")
 
+store = {}
+
 
 if os.path.isfile(env_file):
     # use local secret file if provided
     env.read_env(env_file)
 else:
     try:
-        client = boto3.client('ssm')
-        response = client.get_parameters(Name=[
+        get_aws_parameters(store, [
             'SECRET_KEY',
+            'SECRET_ADMIN_URL',
+            'DATABASE_URL',
+            'DATABASE_ENGINE',
+            'DATABASE_NAME',
+            'DATABASE_USER',
+            'DATABASE_PASSWORD',
+            'DATABASE_HOST',
+            'DATABASE_PORT',
+            'DEBUG_VALUE',
+        ])
+
+        get_aws_parameters(store, [
             'SPOTIFY_CLIENT_ID',
             'SPOTIFY_CLIENT_SECRET',
             'SPOTIFY_REDIRECT_URI',
-            'SECRET_ADMIN_URL',
-            'DATABASE_URL',
-            'DEBUG_VALUE',
-            ], WithDecryption=True)
-        instance_id = response['value']
-        store = {}
-        for n in range(len(response['Parameters'])):
-            store[response['Parameters'][n]['Name']] = response['Parameters'][n]['Value']
+        ])
     except:
         raise Exception("No local .env detected. No secrets found.")
 
@@ -102,7 +109,16 @@ WSGI_APPLICATION = "juummp.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 try:
-    DATABASES = {"default": env.db(default=store['DATABASE_URL'])}
+    DATABASES = {
+        "default": {
+            "ENGINE": f"django.db.backends.{store['DATABASE_ENGINE']}",
+            "NAME": store['DATABASE_NAME'],
+            "USER": store['DATABASE_USER'],
+            "PASSWORD": store['DATABASE_PASSWORD'],
+            "HOST": store['DATABASE_HOST'],
+            "PORT": store['DATABASE_PORT'],
+        }
+    }
 except:
     DATABASES = {
         "default": {

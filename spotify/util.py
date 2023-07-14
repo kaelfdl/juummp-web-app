@@ -9,6 +9,8 @@ from rest_framework import response
 
 from spotify.models import SpotifyToken
 
+from ..juummp.settings import store
+
 BASE_URL = 'https://api.spotify.com/v1/'
 
 def get_user_token(session_id):
@@ -66,8 +68,8 @@ def refresh_spotify_token(session_id):
     response = post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token,
-        'client_id': os.getenv('SPOTIFY_CLIENT_ID'),
-        'client_secret': os.getenv('SPOTIFY_CLIENT_SECRET')
+        'client_id': os.getenv('SPOTIFY_CLIENT_ID') if os.getenv('SPOTIFY_CLIENT_ID') else store['SPOTIFY_CLIENT_ID'],
+        'client_secret': os.getenv('SPOTIFY_CLIENT_SECRET') if os.getenv('SPOTIFY_CLIENT_SECRET') else store['SPOTIFY_CLIENT_SECRET']
     }).json()
 
     access_token = response.get('access_token')
@@ -137,8 +139,8 @@ def app_execute_spotify_api_request(endpoint, post_=False, put_=False, data=None
         return {'Error': 'Issue with request'}
 
 def app_request_access_token():
-    client_id = os.getenv('SPOTIFY_CLIENT_ID')
-    client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
+    client_id = os.getenv('SPOTIFY_CLIENT_ID') if os.getenv('SPOTIFY_CLIENT_ID') else store['SPOTIFY_CLIENT_ID']
+    client_secret = os.getenv('SPOTIFY_CLIENT_SECRET') if os.getenv('SPOTIFY_CLIENT_SECRET') else store['SPOTIFY_CLIENT_SECRET']
 
     auth_string = client_id + ':' + client_secret
     auth_string_bytes = auth_string.encode('ascii')

@@ -9,7 +9,7 @@ from rest_framework import response
 
 from spotify.models import SpotifyToken
 
-from ..juummp.settings import store
+from juummp.settings import store
 
 BASE_URL = 'https://api.spotify.com/v1/'
 

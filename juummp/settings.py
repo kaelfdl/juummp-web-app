@@ -57,7 +57,7 @@ else:
 SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else store['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG_VALUE") if os.environ.get("DEBUG_VALUE") else store['DEBUG_VALUE'] == "True"
+DEBUG = os.environ.get("DEBUG_VALUE") if os.environ.get("DEBUG_VALUE") == "True" else store['DEBUG_VALUE'] == "True"
 
 
 

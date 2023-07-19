@@ -46,6 +46,7 @@ else:
             'SPOTIFY_CLIENT_ID',
             'SPOTIFY_CLIENT_SECRET',
             'SPOTIFY_REDIRECT_URI',
+            'ALLOWED_HOSTS'
         ])
     except:
         raise Exception("No local .env detected. No secrets found.")
@@ -59,7 +60,7 @@ SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else store['SECR
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG_VALUE") if os.environ.get("DEBUG_VALUE") == "True" else store['DEBUG_VALUE'] == "True"
 
-
+ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS") if os.getenv("ALLOWED_HOSTS") else store['ALLOWED_HOSTS']]
 
 # Application definition
 
@@ -166,9 +167,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

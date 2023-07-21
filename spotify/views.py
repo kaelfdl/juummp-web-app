@@ -173,7 +173,7 @@ class PlaylistAPI(APIView):
     def _get_playlist_tracks(self):
         if app_is_spotify_authenticated():
             endpoint = f"playlists/{self.playlist_id}/tracks"
-            params = {"market": "PH"}
+            params = {}
             response = app_execute_spotify_api_request(endpoint, params=params)
             if "error" in response or "items" not in response:
                 return None

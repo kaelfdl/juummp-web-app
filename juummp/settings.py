@@ -46,7 +46,11 @@ else:
             'SPOTIFY_CLIENT_ID',
             'SPOTIFY_CLIENT_SECRET',
             'SPOTIFY_REDIRECT_URI',
-            'ALLOWED_HOSTS'
+            'ALLOWED_HOSTS',
+            'USE_S3',
+            'STORAGE_BUCKET_NAME',
+            'STORAGE_DEFAULT_ACL'
+
         ])
     except:
         raise Exception("No local .env detected. No secrets found.")
@@ -74,6 +78,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "frontend",
     "spotify",
+    "storages"
 ]
 
 MIDDLEWARE = [
@@ -161,6 +166,19 @@ USE_L10N = True
 
 USE_TZ = True
 
+# AWS S3 Configuration
+USE_S3 = os.getenv('USE_S3') == 'TRUE' if os.getenv('USE_S3') else store['USE_S3'] == 'TRUE'
+
+if USE_S3:
+    # aws settings
+    AWS_STORAGE_BUCKET_NAME = os.getenv('STORAGE_BUCKET_NAME') if os.getenv('STORAGE_BUCKET_NAME') else store['STORAGE_BUCKET_NAME']
+    AWS_DEFAULT_ACL = os.getenv('STORAGE_DEFAULT_ACL') if os.getenv('STORAGE_DEFAULT_ACL') else store['STORAGE_DEFAULT_ACL']
+    # AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    # s3 static settings
+    AWS_LOCATION = 'static'
+    # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/

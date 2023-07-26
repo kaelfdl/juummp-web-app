@@ -24,7 +24,7 @@ env_file = os.path.join(BASE_DIR, ".env")
 store = {}
 
 
-if os.path.isfile(env_file):
+if not os.path.isfile(env_file):
     # use local secret file if provided
     env.read_env(env_file)
 else:
@@ -49,8 +49,7 @@ else:
             'ALLOWED_HOSTS',
             'USE_S3',
             'STORAGE_BUCKET_NAME',
-            'STORAGE_DEFAULT_ACL'
-
+            'STORAGE_DEFAULT_ACL',
         ])
     except:
         raise Exception("No local .env detected. No secrets found.")
@@ -62,9 +61,9 @@ else:
 SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else store['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG_VALUE") if os.environ.get("DEBUG_VALUE") == "True" else store['DEBUG_VALUE'] == "True"
+DEBUG = os.environ.get("DEBUG_VALUE") == "True" if os.environ.get("DEBUG_VALUE") else store['DEBUG_VALUE'] == "True"
 
-ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS") if os.getenv("ALLOWED_HOSTS") else store['ALLOWED_HOSTS']]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",") if os.getenv("ALLOWED_HOSTS") else store['ALLOWED_HOSTS'].split(",")
 
 # Application definition
 

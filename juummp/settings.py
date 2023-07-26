@@ -24,7 +24,7 @@ env_file = os.path.join(BASE_DIR, ".env")
 store = {}
 
 
-if not os.path.isfile(env_file):
+if os.path.isfile(env_file):
     # use local secret file if provided
     env.read_env(env_file)
 else:

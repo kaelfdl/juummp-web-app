@@ -11,6 +11,7 @@ from requests import Request, post
 from .util import *
 
 from spotify.models import Playlist
+from juummp.settings import store
 
 # Create your views here.
 class AuthURL(APIView):
@@ -24,8 +25,8 @@ class AuthURL(APIView):
                 params={
                     "scope": scope,
                     "response_type": "code",
-                    "redirect_uri": os.getenv("SPOTIFY_REDIRECT_URI"),
-                    "client_id": os.getenv("SPOTIFY_CLIENT_ID"),
+                    "redirect_uri": os.getenv("SPOTIFY_REDIRECT_URI") if os.getenv('SPOTIFY_REDIRECT_URI') else store['SPOTIFY_REDIRECT_URI'],
+                    "client_id": os.getenv('SPOTIFY_CLIENT_ID') if os.getenv('SPOTIFY_CLIENT_ID') else store['SPOTIFY_CLIENT_ID'],
                 },
             )
             .prepare()
@@ -44,9 +45,9 @@ def spotify_callback(request, format=None):
         data={
             "code": code,
             "grant_type": "authorization_code",
-            "client_id": os.getenv("SPOTIFY_CLIENT_ID"),
-            "client_secret": os.getenv("SPOTIFY_CLIENT_SECRET"),
-            "redirect_uri": os.getenv("SPOTIFY_REDIRECT_URI"),
+            "client_id": os.getenv('SPOTIFY_CLIENT_ID') if os.getenv('SPOTIFY_CLIENT_ID') else store['SPOTIFY_CLIENT_ID'],
+            "client_secret": os.getenv('SPOTIFY_CLIENT_SECRET') if os.getenv('SPOTIFY_CLIENT_SECRET') else store['SPOTIFY_CLIENT_SECRET'],
+            "redirect_uri": os.getenv("SPOTIFY_REDIRECT_URI") if os.getenv('SPOTIFY_REDIRECT_URI') else store['SPOTIFY_REDIRECT_URI'],
         },
     ).json()
 

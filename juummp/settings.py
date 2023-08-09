@@ -50,6 +50,7 @@ else:
             'USE_S3',
             'STORAGE_BUCKET_NAME',
             'STORAGE_DEFAULT_ACL',
+            'PLAYLIST_ID'
         ])
     except:
         raise Exception("No local .env detected. No secrets found.")

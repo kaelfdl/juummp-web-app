@@ -168,7 +168,7 @@ class SetVolume(APIView):
 
 
 class PlaylistAPI(APIView):
-    playlist_id = "37i9dQZF1DXcBWIGoYBM5M"
+    playlist_id = os.getenv('PLAYLIST_ID') if os.getenv('PLAYLIST_ID') else store['PLAYLIST_ID']
     playlist_container = None
 
     def _get_playlist_tracks(self):

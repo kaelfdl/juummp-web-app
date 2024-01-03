@@ -231,7 +231,8 @@ class PlaylistAPI(APIView):
                 else Playlist.objects.filter(playlist_id=self.playlist_id)[0]
             )
 
-            print(playlist.progress)
+            # Uncomment for debugging
+            #print(playlist.progress)
 
             if playlist.progress < playlist.duration:
                 playlist.progress += 1000
